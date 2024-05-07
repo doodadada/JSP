@@ -7,14 +7,18 @@
 <meta charset="UTF-8">
 <title>07_Calendar.jsp</title>
 <style type="text/css">
-.title{ width:560px; height:80px; margin:0 auto; border:1px solid gray; text-align:center;}
-.container{ width: 560px; margin: 0 auto; border:1px solid gray; display: flex;flex-direction: column; justify-content: center;
+.title{ width:700px; height:80px; margin:0 auto; border:1px solid gray; text-align:center;}
+.container{ width: 700px; margin: 0 auto; border:1px solid gray; display: flex;flex-direction: column; justify-content: center;
 align-items:center; }
 .row{display:flex; width:100%; height:80px;}
 .column{flex:1; text-align:center; line-height:80px; border:1px solid gray;}
 .container *{fon-size:120%;font-weight:bold;}
 .row .column:first-child{color:red;}
 .row .column:last-child{color:blue;}
+@media(max-width:700px){
+	.container{width:100%;}
+	.title{width:100%;}
+}
 </style>
 </head>
 <body>
@@ -23,15 +27,28 @@ align-items:center; }
 	int sYear = sDay.get(Calendar.YEAR); //년도 추출
 	int sMonth = sDay.get(Calendar.MONTH); //월 추출(0~11)
 	
+	// 최초 실행시 request.getParameter("sYear")는 null
+	// 이전달이나 다음달 버튼을 클릭하고 이동해온 경우는 null도 아니고 그 값으로 sYear나 sMonth 로 교체해줘야 합니다
+	if(request.getParameter("sYear")!=null){
+		sYear = Integer.parseInt(request.getParameter("sYear"));
+		sMonth = Integer.parseInt(request.getParameter("sMonth"));
+		if(sMonth==12){sMonth=0; sYear++;}
+		if(sMonth==-1){sMonth=11; sYear--;}
+	}
+	
 	sDay.set(sYear,sMonth,1); // sDay 객체를 현재달 1일로 수정
 	int lastDay = sDay.getActualMaximum(Calendar.DATE); // 현재달 마지막 날짜(말일) 추출 저장
 	int start_week = sDay.get(Calendar.DAY_OF_WEEK); // 현재달 1일의 요일 추출
 %>
 <div class="title">
-<input type="button" value="이전달">&nbsp;
+<input type="button" value="이전달"
+	onClick="location.href='07_Calendar.jsp?sYear=<%=sYear %>&sMonth=<%=sMonth-1%>'"/>
+	&nbsp;
 	<%out.print("<span style='font-size:180%;font-weight:bold'>"+sYear+"년 "+(sMonth+1)+"월</span>");
 	%>
-	&nbsp;<input type="button" value="다음달">&nbsp;
+	&nbsp;
+	<input type="button" value="다음달"
+	onClick="location.href='07_Calendar.jsp?sYear=<%=sYear %>&sMonth=<%=sMonth+1%>'"/>&nbsp;
 </div>
 <div class="container">
 	<div class="row">
